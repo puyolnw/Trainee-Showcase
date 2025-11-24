@@ -1,0 +1,393 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================
+   Design Tokens (CSS Variables)
+   Light Theme = พื้นขาว | Dark Theme = เดิม (ดำฟุ้ง)
+   ===================================================== */
+
+/* =====================================================
+   View Transitions API - Creative Theme Switching
+   ===================================================== */
+@supports (view-transition-name: none) {
+  /* Smooth fade cross-fade for everything */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Slide + Fade effect */
+  ::view-transition-old(root) {
+    animation-name: theme-fade-out;
+  }
+  
+  ::view-transition-new(root) {
+    animation-name: theme-fade-in;
+  }
+}
+
+@keyframes theme-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes theme-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Gradient Animation for Theme Toggle Button */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Smooth transition สำหรับ Dark Mode (Fallback) */
+html {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* เฉพาะสี ไม่รวม transform/scale เพื่อไม่ให้ conflict กับ animations */
+:where(*) {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+:root {
+  /* Light Theme (White UI) */
+  --bg: #ffffff;           /* พื้นหลังหน้า */
+  --bg-soft: #f7f8fa;      /* content/panel เบา */
+  --panel: rgba(2,6,23,0.04);  /* การ์ดเบา */
+  --text: #2c3d6b;         /* ตัวอักษรหลักเข้ม - สีน้ำเงินเข้ม */
+  --muted: #1e293b;        /* ตัวอักษรรอง - เข้มขึ้นเพื่อให้อ่านง่าย */
+  --border: rgba(2,6,23,0.12);
+
+  /* PTT Brand (เหมือนเดิมทุกธีม) */
+  --primary: #2867E0;   /* Blue */
+  --accent:  #19B7FF;   /* Cyan */
+  --danger:  #E41F2B;   /* Red */
+  --ring:    #2867E0;
+
+  --shadow: 0 10px 24px rgba(2,6,23,.10);
+
+  /* Progress Bar (Light) */
+  --pg-rail: #e9eef7;
+  --pg-fill: #2867E0;      /* PTT Blue */
+  --pg-fill-2: #19B7FF;    /* PTT Cyan (gradient) */
+  --pg-shadow: 0 0 0 rgba(0,0,0,0);
+  --pg-size: 8px;          /* ความหนาเริ่มต้น (desktop) */
+  --pg-radius: 0px;        /* เหลี่ยม */
+  --pg-gap: 0px;           /* เว้นห่างจากขอบ */
+}
+
+.dark {
+  /* Dark Theme (คงเดิม) */
+  --bg: #0A0F1C;           /* ink-950 */
+  --bg-soft: #0C1220;      /* ink-900 */
+  --panel: rgba(255,255,255,0.05);
+  --text: #E6EAF2;
+  --muted: #94A3B8;
+  --border: rgba(255,255,255,0.10);
+
+  /* Brand — คงเดิม */
+  --primary: #2867E0;
+  --accent:  #19B7FF;
+  --danger:  #E41F2B;
+  --ring:    #19B7FF;
+
+  --shadow: 0 10px 24px rgba(15,23,42,.30);
+
+  /* Progress Bar (Dark) */
+  --pg-rail: #0f172a;
+  --pg-fill: #19B7FF;      /* PTT Cyan */
+  --pg-fill-2: #7dd3fc;    /* lighter cyan */
+  --pg-shadow: 0 0 0 rgba(0,0,0,0);
+  --pg-size: 8px;
+  --pg-radius: 0px;
+  --pg-gap: 0px;
+}
+
+/* Responsive ขนาด Progress Bar */
+@media (pointer: coarse), (max-width: 640px) {
+  :root, .dark { 
+    --pg-size: 6px; 
+  }
+}
+@media (min-width: 1440px) {
+  :root, .dark { 
+    --pg-size: 10px; 
+  }
+}
+
+/* Utility Classes (ใช้แทนสี hardcode) */
+.bg-app   { background: var(--bg); }
+.bg-soft  { background: var(--bg-soft); }
+.text-app { color: var(--text); }
+.text-muted { color: var(--muted); }
+.panel    { background: var(--panel); border: 1px solid var(--border); }
+.border-app { border-color: var(--border); }
+.shadow-app { box-shadow: var(--shadow); }
+.btn-ptt  { background: var(--primary); color: #fff; }
+.btn-ptt:hover { filter: brightness(.95); }
+.link-ptt { color: var(--primary); }
+.link-ptt:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ===================================================== */
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans Thai', 'Prompt', -apple-system, BlinkMacSystemFont, 
+    'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Mobile Drawer Animation - Ultra Smooth */
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-out-left {
+  animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+/* Hide scrollbar but allow scrolling - Ultra Smooth */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  scroll-behavior: smooth;  /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
+  overscroll-behavior: contain;  /* Prevent scroll chaining */
+  scroll-snap-type: y proximity;  /* Gentle snap */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+/* Smooth scroll for all scrollable elements */
+* {
+  scroll-behavior: smooth;
+}
+
+/* =====================================================
+   Site-Wide Scrollbar Styling
+   ===================================================== */
+
+/* ===== ซ่อน Native Scrollbar ทั้งหมด ===== */
+
+/* WebKit (Chrome/Edge/Safari) - ซ่อน scrollbar */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  display: none;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+/* Firefox - ซ่อน scrollbar */
+html,
+body,
+* {
+  scrollbar-width: none;
+}
+
+/* ยังคงเลื่อนได้ปกติ */
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+
+/* =====================================================
+   Utility Classes
+   ===================================================== */
+
+/* ตาราง/การ์ดที่สกรอลล์แนวนอน */
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =====================================================
+   Scroll Progress Bar (Page Progress Indicator)
+   ===================================================== */
+
+/* ===== Vertical right rail ===== */
+#scroll-progress-vertical {
+  position: fixed;
+  top: 0;
+  right: var(--pg-gap);
+  height: 100dvh;
+  width: var(--pg-size);
+  background: var(--pg-rail);
+  border-radius: var(--pg-radius);
+  overflow: hidden;
+  z-index: 60; /* สูงกว่า content */
+  pointer-events: auto; /* เปิดให้คลิกได้ */
+  cursor: pointer;
+  transition: width 0.2s ease;
+  user-select: none; /* ป้องกันการ select text */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#scroll-progress-vertical:hover {
+  width: calc(var(--pg-size) * 1.5); /* ขยายเมื่อ hover */
+}
+
+#scroll-progress-vertical .bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%; /* จะถูกอัปเดตด้วย JS */
+  background: var(--pg-fill);
+  border-radius: 0; /* ให้เหลี่ยมเป๊ะ */
+  transition: height 60ms linear; /* ลื่นไหล */
+}
+
+/* ===== Top rail (horizontal) ===== */
+#scroll-progress-top {
+  position: fixed;
+  top: var(--pg-gap);
+  left: 0;
+  width: 100%;
+  height: var(--pg-size);
+  background: var(--pg-rail);
+  border-radius: var(--pg-radius);
+  overflow: hidden;
+  z-index: 60;
+  pointer-events: auto; /* เปิดให้คลิกได้ */
+  cursor: pointer;
+  transition: height 0.2s ease;
+  display: none; /* ซ่อนไว้ ถ้าต้องการให้แสดง ให้เอา display: none ออก */
+  user-select: none; /* ป้องกันการ select text */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#scroll-progress-top:hover {
+  height: calc(var(--pg-size) * 1.5); /* ขยายเมื่อ hover */
+}
+
+#scroll-progress-top .bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--pg-fill);
+  border-radius: 0;
+  transition: width 60ms linear;
+}
+
